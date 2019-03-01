@@ -1,0 +1,12 @@
+export DVK_PWD="/home/dna/domains/starter.wordpress.davask.com/public_html";
+ rm $DVK_PWD/backups/localhost.uat_manufacturing_wordpress.sql;
+ mysqldump -u root -p uat_manufacturing_wordpress > $DVK_PWD/backups/localhost.uat_manufacturing_wordpress.sql;
+ sed -e s/uat\.manufacturing\.fr/www.manufacturing.fr/g $DVK_PWD/backups/localhost.uat_manufacturing_wordpress.sql > $DVK_PWD/backups/localhost.manufacturing_wordpress.sql;
+ rm $DVK_PWD/dvk.backups/s.localhost.uat_manufacturing_wordpress.*;
+ split -C 50m --numeric-suffixes $DVK_PWD/backups/localhost.uat_manufacturing_wordpress.sql $DVK_PWD/dvk.backups/s.localhost.uat_manufacturing_wordpress.;
+ rm $DVK_PWD/dvk.backups/s.localhost.manufacturing_wordpress.*;
+ split -C 50m --numeric-suffixes $DVK_PWD/backups/localhost.manufacturing_wordpress.sql $DVK_PWD/dvk.backups/s.localhost.manufacturing_wordpress.;
+ cp $DVK_PWD/wp-config.php $DVK_PWD/dvk.backups/wp-config.uat_manufacturing_wordpress.php;
+ cp $DVK_PWD/wp-content/plugins/clearfy/templates/robots.txt $DVK_PWD/dvk.backups/robots.uat_manufacturing_wordpress.txt;
+ sed -e s/uat\.manufacturing\.fr/www.manufacturing.fr/g $DVK_PWD/dvk.backups/robots.uat_manufacturing_wordpress.txt > $DVK_PWD/dvk.backups/robots.manufacturing_wordpress.txt;
+ git add --all && git commit -am "backup latest version uat_manufacturing_wordpress" && git push origin uat;
