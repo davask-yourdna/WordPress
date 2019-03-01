@@ -1,0 +1,3 @@
+[submodule "dvk"]
+	path = dvk
+	url = https://github.com/davask/dvk.git
