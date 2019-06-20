@@ -615,10 +615,25 @@ function rest_handle_options_request( $response, $handler, $request ) {
 	$data     = array();
 
 	foreach ( $handler->get_routes() as $route => $endpoints ) {
-		$match = preg_match( '@^' . $route . '$@i', $request->get_route() );
+		$match = preg_match( '@^' . $route . '$@i', $request->get_route(), $matches );
 
 		if ( ! $match ) {
 			continue;
+		}
+
+		$args = array();
+		foreach ( $matches as $param => $value ) {
+			if ( ! is_int( $param ) ) {
+				$args[ $param ] = $value;
+			}
+		}
+
+		foreach ( $endpoints as $endpoint ) {
+			// Remove the redundant preg_match argument.
+			unset( $args[0] );
+
+			$request->set_url_params( $args );
+			$request->set_attributes( $endpoint );
 		}
 
 		$data = $handler->get_data_for_route( $route, $endpoints, 'help' );
@@ -909,10 +924,10 @@ function rest_get_date_with_gmt( $date, $is_utc = false ) {
 	// Timezone conversion needs to be handled differently between these two
 	// cases.
 	if ( ! $is_utc && ! $has_timezone ) {
-		$local = date( 'Y-m-d H:i:s', $date );
+		$local = gmdate( 'Y-m-d H:i:s', $date );
 		$utc   = get_gmt_from_date( $local );
 	} else {
-		$utc   = date( 'Y-m-d H:i:s', $date );
+		$utc   = gmdate( 'Y-m-d H:i:s', $date );
 		$local = get_date_from_gmt( $utc );
 	}
 
